@@ -9,4 +9,9 @@ export enum RouteName {
 
   // App Page
   Dashboard = 'dashboard',
+
+  // Blank Pages
+  NotFound = 'not-found',
+  Error = 'error',
+  Unauthorized = 'unauthorized',
 }

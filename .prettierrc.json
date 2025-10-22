@@ -14,6 +14,24 @@
   "importOrderSortSpecifiers": true,
   "importOrderParserPlugins": ["typescript", "decorators-legacy"],
   "tailwindStylesheet": "./src/styles/main.css",
-  "tailwindAttributes": ["content-class", "input-class"],
+  "tailwindAttributes": [
+    "content-class",
+    "input-class",
+    "pt:mask:class",
+    "pt:root:class",
+    "pt:header:class",
+    "pt:content:class",
+    "pt:footer:class",
+    "pt:label:class",
+    "pt:input:class",
+    "pt:button:class",
+    "pt:icon:class",
+    "pt:overlay:class",
+    "pt:panel:class",
+    "pt:item:class",
+    "pt:text:class",
+    "pt:wrapper:class",
+    "pt:container:class"
+  ],
   "tailwindFunctions": ["cn"]
 }

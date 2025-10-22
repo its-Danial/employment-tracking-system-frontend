@@ -1,0 +1,5 @@
+@layer components {
+  #nprogress .bar {
+    @apply h-1 bg-primary-500;
+  }
+}

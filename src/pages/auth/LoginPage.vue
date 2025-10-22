@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { z } from 'zod'
+import { useUserStore } from '@/stores/user'
 import { RouteName } from '@/types/router'
 import type { FormSubmitEvent } from '@primevue/forms/form'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
+
+const userStore = useUserStore()
+const router = useRouter()
 
 const credentialResolver = zodResolver(
   z.object({
@@ -25,13 +30,22 @@ const credentials = ref({
   password: '',
 })
 
-function handleSubmit(event: FormSubmitEvent) {
-  if (event.valid) {
-    // Handle valid form submission
-    console.log('Form submitted with:', event.values)
-  } else {
-    // Handle invalid form submission
-    console.log('Form submission errors:', event.errors)
+const loading = ref(false)
+
+async function handleSubmit(event: FormSubmitEvent) {
+  try {
+    if (event.valid) {
+      loading.value = true
+      await userStore.login(event.values as typeof credentials.value)
+      await router.push({ name: RouteName.Dashboard })
+    } else {
+      // Handle invalid form submission
+      console.log('Form submission errors:', event.errors)
+    }
+  } catch (error) {
+    console.error('Login failed:', error)
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -136,7 +150,7 @@ function handleSubmit(event: FormSubmitEvent) {
           Forgot your password?
         </router-link>
       </div>
-      <Button label="Sign In" type="submit" fluid>
+      <Button label="Login" type="submit" fluid :loading>
         <template #icon>
           <UserIcon />
         </template>

@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 
+@import 'nprogress/nprogress.css' layer(base);
+
 @import './theme';
 @import './base';
+@import './components';

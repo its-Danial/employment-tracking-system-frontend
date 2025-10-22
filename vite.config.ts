@@ -12,6 +12,8 @@ export default defineConfig({
     tailwindcss(),
     vue(),
     Components({
+      dirs: [], // Exclude local components from auto-imports
+      extensions: ['vue'],
       dts: './src/types/components.d.ts',
       resolvers: [PrimeVueResolver(), HeroiconsResolver()],
     }),
