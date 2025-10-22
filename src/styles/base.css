@@ -1,0 +1,6 @@
+@layer base {
+  /* Heroicons default sizing to match PrimeVue icon system */
+  svg[data-slot='icon'] {
+    @apply size-(--p-icon-size);
+  }
+}
