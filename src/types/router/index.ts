@@ -9,6 +9,7 @@ export enum RouteName {
 
   // App Page
   Dashboard = 'dashboard',
+  Trades = 'trades',
 
   // Blank Pages
   NotFound = 'not-found',

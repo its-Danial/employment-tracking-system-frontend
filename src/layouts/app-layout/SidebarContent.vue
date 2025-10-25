@@ -87,7 +87,11 @@ const userMenuItems: (MenuItem & { iconComponent?: Component })[] = [
         <template #item="{ item, hasSubmenu, active }">
           <component
             :is="hasSubmenu ? 'div' : 'router-link'"
-            v-bind="hasSubmenu ? {} : { to: item.to }"
+            v-bind="
+              hasSubmenu
+                ? {}
+                : { to: item.to, activeClass: 'bg-surface-200 font-medium dark:bg-surface-900' }
+            "
             class="flex cursor-pointer items-center rounded-md p-2 text-sm text-muted-color-emphasis transition-colors duration-200 ease-in-out hover:bg-surface-200 dark:hover:bg-surface-800"
           >
             <component :is="item.icon" />

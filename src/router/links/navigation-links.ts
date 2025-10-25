@@ -1,7 +1,7 @@
 import { markRaw } from 'vue'
 import { RouteName } from '@/types/router'
 import type { NavLink } from '@/types/router/navigation-links'
-import { ChartBarIcon } from '@heroicons/vue/24/outline'
+import { ChartBarIcon, WrenchScrewdriverIcon } from '@heroicons/vue/24/outline'
 
 export const sidebarLinks: NavLink[] = [
   {
@@ -10,14 +10,8 @@ export const sidebarLinks: NavLink[] = [
     to: { name: RouteName.Dashboard },
   },
   {
-    icon: markRaw(ChartBarIcon),
-    label: 'Dashboard',
-    items: [
-      {
-        icon: markRaw(ChartBarIcon),
-        label: 'Dashboard',
-        to: { name: RouteName.Dashboard },
-      },
-    ],
+    icon: markRaw(WrenchScrewdriverIcon),
+    label: 'Trades',
+    to: { name: RouteName.Trades },
   },
 ]

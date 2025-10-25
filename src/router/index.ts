@@ -23,6 +23,12 @@ const router = createRouter({
           component: () => import('@/pages/DashboardPage.vue'),
           meta: { title: 'Dashboard' },
         },
+        {
+          path: 'trades',
+          name: RouteName.Trades,
+          component: () => import('@/pages/TradesPage.vue'),
+          meta: { title: 'Trades' },
+        },
       ],
     },
     // Auth Layout
