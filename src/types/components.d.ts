@@ -12,6 +12,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     ChevronRightIcon: typeof import('@heroicons/vue/24/outline')['ChevronRightIcon']
     Dialog: typeof import('primevue/dialog')['default']
+    ExclamationTriangleIcon: typeof import('@heroicons/vue/24/outline')['ExclamationTriangleIcon']
     EyeIcon: typeof import('@heroicons/vue/24/outline')['EyeIcon']
     EyeSlashIcon: typeof import('@heroicons/vue/24/outline')['EyeSlashIcon']
     Form: typeof import('@primevue/forms/form')['default']

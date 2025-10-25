@@ -1,11 +1,11 @@
 @layer base {
+  body {
+    @apply bg-surface-50 text-color dark:bg-surface-900;
+  }
+
   /* Heroicons default sizing to match PrimeVue icon system */
   svg[data-slot='icon'] {
     @apply size-(--p-icon-size);
-  }
-
-  body {
-    @apply bg-surface-50 text-color dark:bg-surface-900;
   }
 
   label {
