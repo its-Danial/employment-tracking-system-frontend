@@ -3,4 +3,16 @@
   svg[data-slot='icon'] {
     @apply size-(--p-icon-size);
   }
+
+  body {
+    @apply bg-surface-50 text-color dark:bg-surface-900;
+  }
+
+  label {
+    @apply leading-normal font-medium;
+  }
+
+  a {
+    @apply cursor-pointer;
+  }
 }

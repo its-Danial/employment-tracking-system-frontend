@@ -1,12 +1,7 @@
-<script setup lang="ts">
-import { useUserStore } from '@/stores/user'
-
-const useStore = useUserStore()
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div class="p-6">
+  <div class="page-padding">
     <h1 class="mb-6 text-2xl font-bold">Dashboard</h1>
-    <Button label="Logout" @click="useStore.logout()" />
   </div>
 </template>

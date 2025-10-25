@@ -1,7 +1,7 @@
 import NProgress from 'nprogress'
 import { createRouter, createWebHistory } from 'vue-router'
-import AppLayout from '@/layouts/AppLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import AppLayout from '@/layouts/app-layout/AppLayout.vue'
 import { authenticate, guestsOnly } from '@/router/guards/auth'
 import { RouteName } from '@/types/router'
 

@@ -1,6 +1,6 @@
 import axios, { AxiosError, CanceledError, type InternalAxiosRequestConfig } from 'axios'
-import { useToast } from 'primevue/usetoast'
 import router from '@/router'
+import { useToastStore } from '@/stores/toast'
 import { useUserStore } from '@/stores/user'
 import '@/types/axios'
 import { RouteName } from '@/types/router'
@@ -67,9 +67,9 @@ export const onResponseRejected = async (error: AxiosError<ApiErrorResponse>) =>
     }
   }
 
-  const toast = useToast()
   if (toastMessage) {
-    toast.add({ severity: 'error', summary: 'Error', detail: toastMessage, life: 5000 })
+    const toastStore = useToastStore()
+    toastStore.add({ severity: 'error', summary: 'Error', detail: toastMessage, life: 5000 })
   }
 
   return Promise.reject(error) // Always reject the promise to propagate the error to the caller

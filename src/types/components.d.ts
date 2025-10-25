@@ -8,18 +8,23 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
+    ChevronRightIcon: typeof import('@heroicons/vue/24/outline')['ChevronRightIcon']
     Dialog: typeof import('primevue/dialog')['default']
     EyeIcon: typeof import('@heroicons/vue/24/outline')['EyeIcon']
     EyeSlashIcon: typeof import('@heroicons/vue/24/outline')['EyeSlashIcon']
     Form: typeof import('@primevue/forms/form')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    Menu: typeof import('primevue/menu')['default']
     Message: typeof import('primevue/message')['default']
+    MoonIcon: typeof import('@heroicons/vue/24/outline')['MoonIcon']
+    PanelMenu: typeof import('primevue/panelmenu')['default']
     Password: typeof import('primevue/password')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Toast: typeof import('primevue/toast')['default']
+    SunIcon: typeof import('@heroicons/vue/24/outline')['SunIcon']
     UserIcon: typeof import('@heroicons/vue/24/outline')['UserIcon']
   }
 }

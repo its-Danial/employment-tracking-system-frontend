@@ -1,9 +1,9 @@
 import type { PrimeVueConfiguration } from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
+import preset from './preset'
 
 export default {
   theme: {
-    preset: Aura,
+    preset,
     options: {
       prefix: 'p',
       darkModeSelector: '.dark',

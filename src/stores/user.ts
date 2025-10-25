@@ -4,10 +4,10 @@ import { computed, watch } from 'vue'
 import type { LoginUserRequest, RegisterUserRequest } from '@/api/services/auth-services'
 import authServices from '@/api/services/auth-services'
 import router from '@/router'
+import { useLoadingStore } from '@/stores/loading'
 import { RouteName } from '@/types/router'
 import type { User } from '@/types/user'
 import { StorageSerializers, useCountdown, useStorage } from '@vueuse/core'
-import { useLoadingStore } from './loading'
 
 export const useUserStore = defineStore('user', () => {
   const toast = useToast()

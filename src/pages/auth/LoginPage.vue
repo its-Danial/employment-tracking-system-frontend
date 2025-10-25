@@ -69,16 +69,12 @@ async function handleSubmit(event: FormSubmitEvent) {
         />
       </svg>
       <div class="flex w-full flex-col items-center gap-2 **:w-full **:text-center">
-        <div class="text-2xl leading-tight font-semibold text-surface-900 dark:text-surface-0">
-          Welcome Back
-        </div>
+        <div class="text-2xl leading-tight font-semibold text-color-emphasis">Welcome Back</div>
         <div class="space-x-1">
-          <span class="leading-normal text-surface-700 dark:text-surface-200">
-            Don't have an account?
-          </span>
+          <span class="leading-normal text-muted-color">Don't have an account?</span>
           <router-link
             :to="{ name: RouteName.Register }"
-            class="cursor-pointer font-medium text-primary hover:text-primary-emphasis"
+            class="font-medium text-primary hover:text-primary-emphasis"
           >
             Create today!
           </router-link>
@@ -94,9 +90,7 @@ async function handleSubmit(event: FormSubmitEvent) {
       class="flex flex-col gap-6"
     >
       <div class="flex w-full flex-col gap-2">
-        <label for="email" class="leading-normal font-medium text-surface-900 dark:text-surface-0">
-          Email Address
-        </label>
+        <label for="email">Email Address</label>
         <InputText
           id="email"
           name="email"
@@ -111,12 +105,7 @@ async function handleSubmit(event: FormSubmitEvent) {
         </Message>
       </div>
       <div class="flex w-full flex-col gap-2">
-        <label
-          for="password"
-          class="leading-normal font-medium text-surface-900 dark:text-surface-0"
-        >
-          Password
-        </label>
+        <label for="password">Password</label>
         <Password
           id="password"
           name="password"
@@ -145,7 +134,7 @@ async function handleSubmit(event: FormSubmitEvent) {
       <div class="flex justify-end">
         <router-link
           :to="{ name: RouteName.Login }"
-          class="cursor-pointer font-medium text-primary hover:text-primary-emphasis"
+          class="font-medium text-primary hover:text-primary-emphasis"
         >
           Forgot your password?
         </router-link>

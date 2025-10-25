@@ -1,5 +1,9 @@
 @layer components {
   #nprogress .bar {
-    @apply h-1 bg-primary-500;
+    @apply h-1 bg-primary;
+  }
+
+  .page-padding {
+    @apply p-4;
   }
 }
