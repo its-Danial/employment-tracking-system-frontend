@@ -1,11 +1,10 @@
-import { globalIgnores } from 'eslint/config'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import pluginCypress from 'eslint-plugin-cypress/flat'
+import pluginUnicorn from 'eslint-plugin-unicorn'
 import pluginVue from 'eslint-plugin-vue'
+import { globalIgnores } from 'eslint/config'
 import pluginVitest from '@vitest/eslint-plugin'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import pluginCypress from 'eslint-plugin-cypress'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
 // import { configureVueProject } from '@vue/eslint-config-typescript'
@@ -15,25 +14,58 @@ import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 export default defineConfigWithVueTs(
   {
     name: 'app/files-to-lint',
-    files: ['**/*.{ts,mts,tsx,vue}'],
+    files: ['**/*.{ts,mts,vue}'],
+    plugins: {
+      unicorn: pluginUnicorn,
+    },
+    rules: {
+      // Enforce kebab-case for files except .vue
+      'unicorn/filename-case': [
+        'error',
+        {
+          case: 'kebabCase',
+        },
+      ],
+      // Allow underscore variable names
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+  // Allow PascalCase for .vue files and component test files
+  {
+    files: [
+      '**/*.vue',
+      'src/components/__tests__/**/*',
+      'src/pages/__tests__/**/*',
+      'src/layouts/__tests__/**/*',
+    ],
+    rules: {
+      'unicorn/filename-case': 'off',
+    },
   },
 
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  
+
   {
     ...pluginVitest.configs.recommended,
-    files: ['src/**/__tests__/*'],
+    files: ['src/**/__tests__/**/*', 'tests/**/*'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
-  
+
   {
     ...pluginCypress.configs.recommended,
-    files: [
-      'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',
-      'cypress/support/**/*.{js,ts,jsx,tsx}'
-    ],
+    files: ['cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}', 'cypress/support/**/*.{js,ts,jsx,tsx}'],
   },
-  skipFormatting,
+  skipFormatting
 )
