@@ -1,77 +1,83 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
+import { storeToRefs } from 'pinia'
 import Drawer from 'primevue/drawer'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import ThemeButton from '@/components/ThemeButton.vue'
+import { useLocaleStore } from '@/stores/locale'
 import { Bars3Icon } from '@heroicons/vue/24/outline'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { breakpointsTailwind, useBreakpoints, useStorage } from '@vueuse/core'
 import SidebarContent from './SidebarContent.vue'
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
+const { t } = useI18n()
+const route = useRoute()
+const { isRtl } = storeToRefs(useLocaleStore())
+const isMediumScreen = useBreakpoints(breakpointsTailwind).greater('md')
 
-const isMediumScreen = breakpoints.greater('md')
-const isSideBarOpen = ref(isMediumScreen.value)
+// Desktop remembers whether the menu was collapsed, the phone drawer always starts closed
+const isDesktopSidebarOpen = useStorage('sidebar-open', true)
+const isMobileDrawerOpen = ref(false)
+watch(
+  () => route.fullPath,
+  () => (isMobileDrawerOpen.value = false)
+)
 
-const toggleSidebar = () => (isSideBarOpen.value = !isSideBarOpen.value)
+function toggleSidebar() {
+  if (isMediumScreen.value) isDesktopSidebarOpen.value = !isDesktopSidebarOpen.value
+  else isMobileDrawerOpen.value = !isMobileDrawerOpen.value
+}
 </script>
 
 <template>
-  <div class="app-layout relative flex h-full min-h-screen w-full">
-    <!-- Desktop: Regular fixed sidebar -->
+  <!-- relative: anything positioned inside stays inside the shell instead of growing the page -->
+  <div class="app-layout relative flex h-screen w-screen overflow-hidden">
     <aside
       v-if="isMediumScreen"
       :class="[
-        'fixed top-0 left-0 h-full border-r border-surface transition-all duration-200 ease-linear',
-        isSideBarOpen ? 'w-(--sidebar-width-open)' : 'w-(--sidebar-width-closed)',
+        'fixed start-0 top-0 z-1000 h-full transition-[width] duration-200 ease-out',
+        isDesktopSidebarOpen ? 'w-(--sidebar-width-open)' : 'w-(--sidebar-width-closed)',
       ]"
     >
-      <SidebarContent :is-side-bar-open />
+      <SidebarContent :is-side-bar-open="isDesktopSidebarOpen" />
     </aside>
-    <!-- Mobile: PrimeVue Drawer -->
-    <Drawer v-else v-model:visible="isSideBarOpen">
+    <Drawer
+      v-else
+      v-model:visible="isMobileDrawerOpen"
+      :position="isRtl ? 'right' : 'left'"
+      :pt:root:class="'w-(--sidebar-width-open)! border-0!'"
+    >
       <template #container>
-        <SidebarContent :is-side-bar-open class="app-layout" />
+        <SidebarContent is-side-bar-open />
       </template>
     </Drawer>
 
-    <!-- Main content area -->
     <div
       :class="[
-        'flex min-h-screen flex-1 flex-col transition-all duration-200 ease-linear',
+        'flex h-screen min-w-0 flex-1 flex-col transition-[margin] duration-200 ease-out',
         {
-          'ml-(--sidebar-width-open)': isMediumScreen && isSideBarOpen,
-          'ml-(--sidebar-width-closed)': isMediumScreen && !isSideBarOpen,
+          'ms-(--sidebar-width-open)': isMediumScreen && isDesktopSidebarOpen,
+          'ms-(--sidebar-width-closed)': isMediumScreen && !isDesktopSidebarOpen,
         },
       ]"
     >
-      <!-- Top navigation header -->
-      <header
-        class="flex h-(--header-height) shrink-0 items-center gap-2 border-b border-surface p-2"
-      >
-        <!-- Left Content -->
-        <div class="flex flex-1 items-center">
-          <!-- Sidebar toggle button -->
-          <Button
-            @click="toggleSidebar"
-            :dt="{ padding: { y: 0, x: 0 }, iconOnlyWidth: 'fit' }"
-            variant="text"
-            class="size-6"
-            severity="contrast"
-          >
-            <template #icon>
-              <Bars3Icon />
-            </template>
-          </Button>
-        </div>
-        <!-- Right Content -->
-        <div class="flex items-center gap-2">
-          <!-- Theme toggle button -->
-          <ThemeButton />
-        </div>
+      <header class="flex h-14 shrink-0 items-center gap-2 px-3 md:px-5">
+        <Button
+          @click="toggleSidebar"
+          :aria-label="t('nav.toggleSidebar')"
+          variant="text"
+          severity="secondary"
+          class="size-9"
+        >
+          <template #icon><Bars3Icon /></template>
+        </Button>
+        <div class="flex-1" />
+        <LanguageSwitcher />
+        <ThemeButton />
       </header>
 
-      <!-- Main content -->
-      <main class="flex flex-1 flex-col overflow-y-auto">
+      <main class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
         <router-view />
       </main>
     </div>
@@ -80,9 +86,7 @@ const toggleSidebar = () => (isSideBarOpen.value = !isSideBarOpen.value)
 
 <style scoped>
 .app-layout {
-  --sidebar-width-open: calc(var(--spacing) * 64) /* 16rem = 256px */;
-  --sidebar-width-closed: calc(var(--spacing) * 12) /* 3rem = 48px */;
-  --header-height: calc(var(--spacing) * 16) /* 4rem = 64px */;
-  --header-padding: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
+  --sidebar-width-open: 15.5rem;
+  --sidebar-width-closed: 4.25rem;
 }
 </style>

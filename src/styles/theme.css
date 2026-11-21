@@ -1,1 +1,21 @@
+@theme {
+  /* Fonts */
+  --font-sans:
+    'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  /* The sans has no Urdu letters, so Urdu falls through to Naskh while names and numbers keep the sans */
+  --font-urdu: 'Schibsted Grotesk', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif;
+
+  /* Passport gold, only for printed details: the guilloche pattern and the active nav marker */
+  --color-gold-300: #d9bf86;
+  --color-gold-400: #c7a35a;
+  --color-gold-500: #b08a3e;
+  --color-gold-600: #8f6f2f;
+
+  /* The cover is the company colour (passport green by default) in both modes */
+  --color-passport: var(--tenant-cover, var(--p-primary-500));
+  --color-passport-ink: #f3f1e8;
+  --color-passport-muted: color-mix(in srgb, #f3f1e8 72%, transparent);
+}
+
 @custom-variant dark (&:where(.dark, .dark *));

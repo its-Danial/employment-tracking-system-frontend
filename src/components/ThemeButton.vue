@@ -1,18 +1,19 @@
-<script lang="ts">
-import { usePresetStore } from '@/stores/preset'
-</script>
-
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+import { usePresetStore } from '@/stores/preset'
+
+const { t } = useI18n()
 const presetStore = usePresetStore()
 </script>
+
 <template>
+  <!-- Picking a mode is remembered, until then the computer's setting is followed -->
   <Button
     @click="presetStore.toggleTheme"
     variant="text"
-    :aria-label="presetStore.isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-    :dt="{ padding: { y: 0, x: 0 }, iconOnlyWidth: 'fit' }"
-    class="size-6"
-    severity="contrast"
+    severity="secondary"
+    :aria-label="presetStore.isDark ? t('theme.switchToLight') : t('theme.switchToDark')"
+    class="size-9"
   >
     <template #icon>
       <SunIcon v-if="presetStore.isDark" />

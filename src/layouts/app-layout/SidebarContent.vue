@@ -1,159 +1,109 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import Button from 'primevue/button'
 import type { MenuItem } from 'primevue/menuitem'
-import { type Component, markRaw, useTemplateRef } from 'vue'
+import { type Component, computed, markRaw, useTemplateRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+import CompanyMark from '@/components/CompanyMark.vue'
+import GuillochePattern from '@/components/GuillochePattern.vue'
+import { initialsOf } from '@/lib/utils'
 import { sidebarLinks } from '@/router/links/navigation-links'
+import { useTenantStore } from '@/stores/tenant'
 import { useUserStore } from '@/stores/user'
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 
-const { isSideBarOpen } = defineProps<{
-  isSideBarOpen: boolean
-}>()
+const { isSideBarOpen } = defineProps<{ isSideBarOpen: boolean }>()
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isMediumScreen = breakpoints.greater('md')
-
+const { t } = useI18n()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
+const { tenant } = storeToRefs(useTenantStore())
+
+// Links the user has no permission for are not shown at all
+const visibleLinks = computed(() =>
+  sidebarLinks
+    .filter((link) => !link.permission || userStore.can(link.permission))
+    .map((link) => ({
+      key: link.labelKey,
+      to: link.to!,
+      icon: link.icon as Component,
+      startsGroup: !!link.startsGroup,
+      label: t(`nav.${link.labelKey}`),
+    }))
+)
 
 const userMenuRef = useTemplateRef('userMenuRef')
-
-const userMenuItems: (MenuItem & { iconComponent?: Component })[] = [
+const userMenuItems = computed<(MenuItem & { iconComponent?: Component })[]>(() => [
   {
-    label: 'Profile',
-    items: [
-      {
-        label: 'Logout',
-        iconComponent: markRaw(ArrowRightStartOnRectangleIcon),
-        command: () => userStore.logout(),
-      },
-    ],
+    label: t('common.logout'),
+    iconComponent: markRaw(ArrowRightStartOnRectangleIcon),
+    command: () => userStore.logout(),
   },
-]
+])
 </script>
 
 <template>
+  <!-- The passport cover: company colour with its gold print, darker in dark mode so it doesn't glare -->
   <div
-    class="sidebar-content flex size-full flex-col bg-surface-100 transition dark:bg-surface-950"
+    class="relative isolate flex size-full flex-col overflow-hidden bg-passport text-passport-ink dark:bg-[color-mix(in_oklab,var(--color-passport),black_38%)]"
   >
-    <!-- Sidebar header -->
-    <header
-      class="flex h-(--header-height) items-center border-b border-surface p-(--sidebar-item-padding)"
-    >
-      <div
-        class="flex w-full items-center gap-2 rounded-border text-sm"
-        :class="{ 'p-2': isSideBarOpen }"
-      >
-        <!-- Logo/Icon -->
-        <div
-          class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary-500 leading-0 tracking-tighter text-primary-50"
-        >
-          ETS
-        </div>
+    <GuillochePattern
+      :seed="tenant?.subdomain ?? ''"
+      class="pointer-events-none absolute -start-24 -bottom-28 -z-10 size-80 text-gold-400/25"
+    />
 
-        <!-- Company info -->
-        <div
-          class="flex flex-1 flex-col overflow-hidden text-left text-sm leading-tight transition-all duration-300 ease-in-out"
-          :class="{ 'w-0 opacity-0': !isSideBarOpen, 'w-full opacity-100': isSideBarOpen }"
-        >
-          <span class="truncate font-semibold">Your Company</span>
-          <span class="truncate text-xs text-muted-color">Enterprise</span>
-        </div>
+    <header class="flex h-16 shrink-0 items-center gap-3 px-3">
+      <div class="size-9 shrink-0 text-sm">
+        <CompanyMark :name="tenant?.name" :logo-url="tenant?.logoUrl" />
+      </div>
+      <div v-if="isSideBarOpen" class="flex min-w-0 flex-col leading-tight">
+        <span class="truncate font-semibold">{{ tenant?.name }}</span>
+        <span class="truncate text-sm text-passport-muted">
+          {{ user?.role?.name ?? t('nav.noRole') }}
+        </span>
       </div>
     </header>
 
-    <!-- Navigation content -->
-    <menu class="flex-1 overflow-auto p-(--sidebar-item-padding)">
-      <div
-        :class="[
-          'h-8 p-2 text-xs font-medium text-muted-color transition-[margin,opacity] duration-300 ease-in-out',
-          { '-mt-8 opacity-0': !isSideBarOpen },
-        ]"
-      >
-        Navigation
-      </div>
-      <PanelMenu
-        :model="sidebarLinks as MenuItem[]"
-        :expandedKeys="!isSideBarOpen ? {} : undefined"
-        :pt="{
-          root: { class: 'gap-1' },
-          panel: {
-            class: 'p-0 rounded-border border-0 bg-transparent',
-          },
-        }"
-      >
-        <template #item="{ item, hasSubmenu, active }">
-          <component
-            :is="hasSubmenu ? 'div' : 'router-link'"
-            v-bind="
-              hasSubmenu
-                ? {}
-                : { to: item.to, activeClass: 'bg-surface-200 font-medium dark:bg-surface-900' }
-            "
-            class="flex cursor-pointer items-center rounded-md p-2 text-sm text-muted-color-emphasis transition-colors duration-200 ease-in-out hover:bg-surface-200 dark:hover:bg-surface-800"
+    <nav class="flex-1 overflow-y-auto px-2 pt-4" :aria-label="t('nav.navigation')">
+      <ul class="flex flex-col gap-0.5">
+        <li
+          v-for="link in visibleLinks"
+          :key="link.key"
+          :class="{ 'mt-3 border-t border-white/10 pt-3': link.startsGroup }"
+        >
+          <router-link
+            :to="link.to"
+            :title="isSideBarOpen ? undefined : link.label"
+            class="nav-link relative flex h-10 items-center gap-3 rounded-md px-3 text-passport-muted transition-colors duration-150 hover:bg-white/7 hover:text-passport-ink"
+            active-class="nav-link-active"
           >
-            <component :is="item.icon" />
-            <div
-              class="flex flex-1 items-center justify-between overflow-hidden transition-all duration-300 ease-in-out"
-              :class="{ 'w-0 opacity-0': !isSideBarOpen, 'ml-2 w-full opacity-100': isSideBarOpen }"
-            >
-              <span class="truncate">{{ item.label }}</span>
-              <ChevronRightIcon
-                v-if="hasSubmenu"
-                class="shrink-0 transition-transform duration-300 ease-in-out"
-                :class="{ 'rotate-90': active }"
-              />
-            </div>
-          </component>
-        </template>
-      </PanelMenu>
-    </menu>
+            <component :is="link.icon" class="size-5! shrink-0" />
+            <span v-if="isSideBarOpen" class="truncate">{{ link.label }}</span>
+          </router-link>
+        </li>
+      </ul>
+    </nav>
 
-    <!-- User section -->
-    <div id="user-menu" class="p-(--sidebar-item-padding)">
-      <Button
-        variant="text"
-        severity="contrast"
-        class="relative flex w-full items-center gap-0 rounded-border border-0 text-sm"
-        :class="isSideBarOpen ? 'h-(--sidebar-open-user-menu-height) p-2' : 'h-fit p-0'"
+    <div id="user-menu" class="shrink-0 p-2">
+      <button
+        type="button"
+        class="flex w-full items-center gap-3 rounded-md p-2 text-start transition-colors hover:bg-white/7"
         aria-haspopup="true"
         aria-controls="overlay_user_menu"
         @click="userMenuRef?.toggle"
       >
-        <Avatar :label="user?.fullName[0]" />
-        <div
-          class="flex flex-1 flex-col overflow-hidden text-left text-sm leading-tight transition-all duration-300 ease-in-out"
-          :class="{
-            'ml-2 w-full opacity-100': isSideBarOpen,
-            'w-0 opacity-0': !isSideBarOpen,
-          }"
+        <span
+          class="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-gold-300"
         >
-          <span class="truncate font-semibold">{{ user?.fullName }}</span>
-          <span class="truncate text-xs text-muted-color">{{ user?.email }}</span>
-        </div>
-      </Button>
+          {{ initialsOf(user?.fullName ?? user?.email) }}
+        </span>
+        <span v-if="isSideBarOpen" class="flex min-w-0 flex-col leading-tight">
+          <span class="truncate font-medium">{{ user?.fullName }}</span>
+          <span class="truncate text-sm text-passport-muted">{{ user?.email }}</span>
+        </span>
+      </button>
     </div>
   </div>
-  <Menu
-    ref="userMenuRef"
-    id="overlay_user_menu"
-    append-to="#user-menu"
-    :model="userMenuItems"
-    popup
-    :pt="{
-      root: {
-        class: {
-          '-mt-2!': !isMediumScreen && isSideBarOpen,
-          'mt-(--sidebar-open-user-menu-height)! ml-(--sidebar-width-open)':
-            isSideBarOpen && isMediumScreen,
-          'mt-(--sidebar-closed-user-menu-height)! ml-(--sidebar-width-closed)':
-            !isSideBarOpen && isMediumScreen,
-        },
-      },
-    }"
-  >
+  <Menu ref="userMenuRef" id="overlay_user_menu" :model="userMenuItems" popup>
     <template #itemicon="{ item }">
       <component v-if="item.iconComponent" :is="item.iconComponent" />
     </template>
@@ -161,9 +111,19 @@ const userMenuItems: (MenuItem & { iconComponent?: Component })[] = [
 </template>
 
 <style scoped>
-.sidebar-content {
-  --sidebar-item-padding: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
-  --sidebar-open-user-menu-height: calc(var(--spacing) * 12) /* 3rem = 48px */;
-  --sidebar-closed-user-menu-height: calc(var(--spacing) * 8) /* 2rem = 32px (after removing p-2) */;
+/* Active page: cream text on a lifted band, marked with a gold rule like a passport page edge */
+.nav-link-active {
+  background: rgb(255 255 255 / 0.1);
+  color: var(--color-passport-ink);
+  font-weight: 500;
+}
+.nav-link-active::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.625rem;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-gold-400);
 }
 </style>

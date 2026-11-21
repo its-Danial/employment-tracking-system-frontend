@@ -1,60 +1,44 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { z } from 'zod'
+import { useFormRules } from '@/composables/use-form-rules'
 import { useTenantStore } from '@/stores/tenant'
 import { useUserStore } from '@/stores/user'
 import { RouteName } from '@/types/router'
 import type { FormSubmitEvent } from '@primevue/forms/form'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 
+const { t } = useI18n()
 const router = useRouter()
+const rules = useFormRules()
 
 const userStore = useUserStore()
 const { tenant } = storeToRefs(useTenantStore())
 
-const credentialResolver = zodResolver(
-  z.object({
-    fullName: z
-      .string()
-      .min(2, {
-        error: (issue) => (!issue.input ? 'Full Name is required' : 'Full Name is too short'),
-      })
-      .max(100),
-    email: z
-      .email({ error: (issue) => (!issue.input ? 'Email is required' : 'Invalid email address') })
-      .min(2)
-      .max(100),
-    password: z
-      .string()
-      .min(8, {
-        error: (issue) => (!issue.input ? 'Password is required' : 'Password is too short'),
-      })
-      .max(100),
-  })
+const resolver = computed(() =>
+  zodResolver(
+    z.object({
+      fullName: rules.text(t('auth.fullName'), { min: 2, max: 100 }),
+      email: rules.email(t('auth.email')),
+      password: rules.password(t('auth.password')),
+    })
+  )
 )
 
-const credentials = ref({
-  fullName: '',
-  email: '',
-  password: '',
-})
-
+const credentials = ref({ fullName: '', email: '', password: '' })
 const loading = ref(false)
 
 async function handleSubmit(event: FormSubmitEvent) {
+  if (!event.valid) return
   try {
-    if (event.valid) {
-      loading.value = true
-      await userStore.register(event.values as typeof credentials.value)
-      await router.push({ name: RouteName.Dashboard })
-    } else {
-      // Handle invalid form submission
-      console.log('Form submission errors:', event.errors)
-    }
-  } catch (error) {
-    console.error('Registration failed:', error)
+    loading.value = true
+    await userStore.register(event.values as typeof credentials.value)
+    await router.push({ name: RouteName.Dashboard })
+  } catch {
+    // The API error toast already explains what went wrong
   } finally {
     loading.value = false
   }
@@ -67,19 +51,20 @@ async function handleSubmit(event: FormSubmitEvent) {
       <img
         v-if="tenant?.logoUrl"
         :src="tenant?.logoUrl"
+        :alt="tenant?.name"
         class="mx-auto block max-w-3xs lg:hidden"
       />
       <div class="flex w-full flex-col items-center gap-2 **:w-full **:text-center">
         <div class="text-2xl leading-tight font-semibold text-color-emphasis">
-          Register an Account
+          {{ t('auth.createAccount') }}
         </div>
-        <div class="space-x-1">
-          <span class="leading-normal text-muted-color">Already have an account?</span>
+        <div class="space-x-1 rtl:space-x-reverse">
+          <span class="leading-normal text-muted-color">{{ t('auth.haveAccount') }}</span>
           <router-link
             :to="{ name: RouteName.Login }"
             class="cursor-pointer font-medium text-primary hover:text-primary-emphasis"
           >
-            Login!
+            {{ t('auth.logIn') }}
           </router-link>
         </div>
       </div>
@@ -88,19 +73,19 @@ async function handleSubmit(event: FormSubmitEvent) {
     <Form
       v-slot="$form"
       :initial-values="credentials"
-      :resolver="credentialResolver"
+      :resolver
       @submit="handleSubmit"
       class="flex flex-col gap-6"
     >
       <div class="flex w-full flex-col gap-2">
-        <label for="fullName">Full Name</label>
+        <label for="fullName">{{ t('auth.fullName') }}</label>
         <InputText
           id="fullName"
           name="fullName"
-          type="text"
+          autocomplete="name"
           v-model="credentials.fullName"
           fluid
-          placeholder="Full Name"
+          :placeholder="t('auth.fullName')"
           class="shadow-sm"
         />
         <Message v-if="$form.fullName?.invalid" severity="error" size="small" variant="simple">
@@ -108,14 +93,16 @@ async function handleSubmit(event: FormSubmitEvent) {
         </Message>
       </div>
       <div class="flex w-full flex-col gap-2">
-        <label for="email">Email Address</label>
+        <label for="email">{{ t('auth.email') }}</label>
         <InputText
           id="email"
           name="email"
           type="email"
+          autocomplete="email"
+          dir="ltr"
           v-model="credentials.email"
           fluid
-          placeholder="Email address"
+          :placeholder="t('auth.email')"
           class="shadow-sm"
         />
         <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">
@@ -123,15 +110,15 @@ async function handleSubmit(event: FormSubmitEvent) {
         </Message>
       </div>
       <div class="flex w-full flex-col gap-2">
-        <label for="password">Password</label>
+        <label for="password">{{ t('auth.password') }}</label>
         <Password
-          id="password"
+          input-id="password"
           name="password"
-          type="password"
+          autocomplete="new-password"
           v-model="credentials.password"
           toggleMask
           fluid
-          placeholder="Password"
+          :placeholder="t('auth.password')"
           input-class="shadow-sm"
         >
           <template #unmaskicon="{ toggleCallback }">
@@ -148,7 +135,7 @@ async function handleSubmit(event: FormSubmitEvent) {
           {{ $form.password.error?.message }}
         </Message>
       </div>
-      <Button label="Sign In" type="submit" fluid :loading>
+      <Button :label="t('auth.signUp')" type="submit" fluid :loading>
         <template #icon>
           <UserIcon />
         </template>

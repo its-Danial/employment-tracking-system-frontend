@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { RouteName } from '@/types/router'
 
+const { t } = useI18n()
+
 const {
-  title = 'Error',
-  message = 'An unexpected error has occurred.',
+  title,
+  message,
   showErrorImage = true,
   showHomeButton = true,
 } = defineProps<{
@@ -26,23 +29,21 @@ const {
       >
         <ExclamationTriangleIcon class="size-6" />
       </div>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ title }}</h1>
-      <span class="text-muted-color">{{ message }}</span>
-      <img
-        v-if="showErrorImage"
-        src="/svg/error/asset-error.svg"
-        alt="Error"
-        width="80%"
-        class="mt-4"
-      />
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+        {{ title ?? t('pageTitles.error') }}
+      </h1>
+      <span class="text-center text-muted-color">{{ message ?? t('errors.unexpected') }}</span>
+      <img v-if="showErrorImage" src="/svg/error/asset-error.svg" alt="" width="80%" class="mt-4" />
       <Button
         v-if="showHomeButton"
         as="router-link"
-        label="Go to Dashboard"
+        :label="t('common.goToDashboard')"
         :to="{ name: RouteName.Dashboard }"
         severity="danger"
         class="mt-6"
       />
+      <!-- Extra actions -->
+      <slot />
     </div>
   </div>
 </template>
