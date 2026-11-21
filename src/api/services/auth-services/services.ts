@@ -1,9 +1,9 @@
 import api from '@/api'
 import endpoints from '@/api/endpoints'
 import type {
+  CurrentUserResponse,
   LoginUserRequest,
   LoginUserResponse,
-  LogoutUserResponse,
   RegisterUserRequest,
   RegisterUserResponse,
 } from './types'
@@ -21,7 +21,10 @@ export default {
       await api.post<LoginUserResponse>(endpoints.LOGIN, payload, { attachAccessToken: false })
     ).data
   },
+  async me() {
+    return (await api.get<CurrentUserResponse>(endpoints.ME)).data
+  },
   async logout() {
-    return (await api.post<LogoutUserResponse>(endpoints.LOGOUT)).data
+    await api.post(endpoints.LOGOUT) // 204 No Content
   },
 } as const

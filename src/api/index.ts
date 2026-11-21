@@ -1,24 +1,25 @@
-import axios, { AxiosError, CanceledError, type InternalAxiosRequestConfig } from 'axios'
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import i18n from '@/i18n'
+import { getErrorMessage, isCancelledRequest } from '@/lib/api-errors'
+import { getTenantSubdomain } from '@/lib/utils'
 import router from '@/router'
 import { useToastStore } from '@/stores/toast'
 import { useUserStore } from '@/stores/user'
 import '@/types/axios'
 import { RouteName } from '@/types/router'
-import type { ApiErrorResponse, ApiFieldError } from './types'
-
-export * from './types'
-
-export const formatApiErrorMessages = (errors: ApiFieldError[]): string => {
-  return errors.map((error) => error.message).join('.\n') + '.'
-}
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: { 'X-Tenant': getTenantSubdomain() },
+  timeout: 30_000, // Fail visibly on a dead connection instead of spinning forever
   showErrorMessageToast: true,
   attachAccessToken: true,
 })
 
 export const onRequestFulfilled = async (config: InternalAxiosRequestConfig) => {
+  // The API answers (error messages, validation) in the language the user picked
+  config.headers['Accept-Language'] = i18n.global.locale.value
+
   // Add the access token to the request
   if (config.attachAccessToken) {
     const userStore = useUserStore()
@@ -32,47 +33,24 @@ export const onRequestFulfilled = async (config: InternalAxiosRequestConfig) => 
   return config
 }
 
-export const onResponseRejected = async (error: AxiosError<ApiErrorResponse>) => {
-  let toastMessage: string | undefined
+/**
+ * Every failed request shows a friendly error toast (opt out per request with
+ * `showErrorMessageToast: false`, e.g. when the page shows the error itself).
+ * The error is always re-thrown so callers / TanStack Query can react to it.
+ */
+export const onResponseRejected = async (error: AxiosError) => {
+  if (isCancelledRequest(error)) return Promise.reject(error)
 
-  if (!error.response) {
-    if (error instanceof CanceledError) return Promise.reject(error) // Abort Controller request cancelled - no message
-    toastMessage = error.message ?? 'Please check your connection and try again.'
-    if (error.code === AxiosError.ERR_NETWORK) await router.push({ name: RouteName.Error })
-  } else {
-    // --- Status Code Handling ---
-    switch (error.response.status) {
-      case 401:
-        await useUserStore().logout(false) // Do not hit the API, just clear the store and redirect
-        break
-      case 403:
-        await router.push({ name: RouteName.Error })
-        break
-    }
-
-    // --- Error Message Toast Handling ---
-    if (error.config?.showErrorMessageToast) {
-      const errorData = error.response.data
-      // We only want to format the field errors into a single message if message from backend is not present.
-      if (!errorData.message && Array.isArray(errorData.errors)) {
-        // validation errors
-        toastMessage = formatApiErrorMessages(errorData.errors)
-      } else if (errorData.message) {
-        // backend error message
-        toastMessage = errorData.message
-      } else {
-        // unknown error
-        toastMessage = 'An error occurred while processing the request.'
-      }
-    }
+  // Expired or revoked token: clear the session and go to login
+  if (error.response?.status === 401 && error.config?.attachAccessToken) {
+    await useUserStore().logout(false)
   }
 
-  if (toastMessage) {
-    const toastStore = useToastStore()
-    toastStore.add({ severity: 'error', summary: 'Error', detail: toastMessage, life: 5000 })
+  if (error.config?.showErrorMessageToast !== false) {
+    useToastStore().error(getErrorMessage(error))
   }
 
-  return Promise.reject(error) // Always reject the promise to propagate the error to the caller
+  return Promise.reject(error)
 }
 
 api.interceptors.request.use(onRequestFulfilled, (error) => Promise.reject(error))

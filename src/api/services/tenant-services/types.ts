@@ -1,5 +1,5 @@
 // RESPONSE
-import type { ApiSuccessResponse } from '@/api/types'
-import type { Tenant } from '@/types/tenant/intex'
+import type { SuccessResponse } from '@/shared/api'
+import type { Tenant } from '@/shared/entities'
 
-export type TenantInfoResponse = ApiSuccessResponse<Tenant>
+export type TenantInfoResponse = SuccessResponse<Tenant>

@@ -1,7 +1,6 @@
 // REQUEST
-import type { ApiSuccessResponse } from '@/api/types'
-import type { ISODateString } from '@/types'
-import type { User } from '@/types/user'
+import type { SuccessResponse } from '@/shared/api'
+import type { AuthSession, User } from '@/shared/entities'
 
 export interface RegisterUserRequest {
   /**
@@ -16,18 +15,14 @@ export interface RegisterUserRequest {
 export interface LoginUserRequest {
   email: string
   password: string
+  /** 30 day session instead of 12 hours */
+  rememberMe?: boolean
 }
 
 // RESPONSE
 
-export type RegisterUserResponse = ApiSuccessResponse<{
-  user: User
-  token: { value: string; expiresAt: ISODateString }
-}>
+export type RegisterUserResponse = SuccessResponse<AuthSession>
 
-export type LoginUserResponse = ApiSuccessResponse<{
-  user: User
-  token: { value: string; expiresAt: ISODateString }
-}>
+export type LoginUserResponse = SuccessResponse<AuthSession>
 
-export type LogoutUserResponse = ApiSuccessResponse<undefined>
+export type CurrentUserResponse = SuccessResponse<User>

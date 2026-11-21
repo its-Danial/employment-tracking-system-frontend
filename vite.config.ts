@@ -23,4 +23,17 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Framework code changes rarely, separate chunks stay browser-cached across our deploys.
+        // PrimeVue components are left out so each one still loads only with the page using it.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (/node_modules\/(@primeuix|@primevue\/core)\//.test(id)) return 'vendor-primevue'
+          if (/node_modules\/(@vue|vue|vue-router|pinia|@vueuse)\//.test(id)) return 'vendor-vue'
+        },
+      },
+    },
+  },
 })
