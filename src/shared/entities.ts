@@ -34,6 +34,8 @@ export interface Tenant {
   contactPhone: string | null
   address: string | null
   isActive: boolean
+  /** Sample data company, can be reset from the platform page */
+  isDemo: boolean
   color: string | null
   logoUrl: string | null
   tagline: string | null
@@ -104,6 +106,7 @@ export interface Agent extends Timestamps {
   contactPhone: string | null
   contactEmail: string | null
   hireDate: ISODateString | null
+  notes: string | null
   isActive: boolean
   candidatesCount: number
   departedCount: number
@@ -117,6 +120,7 @@ export interface ContractVisa {
   visaNumber: string
   totalVisas: number
   allocatedVisas: number
+  note: string | null
   trade: { uuid: UUID; name: string }
 }
 
@@ -127,6 +131,7 @@ export interface Contract extends Timestamps {
   status: ContractStatus
   startDate: ISODateString | null
   endDate: ISODateString | null
+  note: string | null
   company: { uuid: UUID; name: string; country: string }
   visas: ContractVisa[]
 }
@@ -313,3 +318,15 @@ export interface CandidateFilterOptions {
   companies: { uuid: UUID; name: string }[]
   trades: { uuid: UUID; name: string }[]
 }
+
+/** Body of `POST /users` (and the platform's per company equivalent) */
+export interface CreateUserRequest {
+  fullName: string
+  email: string
+  password: string
+  roleUuid?: UUID | null
+  isActive?: boolean
+}
+
+/** Body of `PUT /users/:uuid`. A new password or deactivating signs the user out everywhere. */
+export type UpdateUserRequest = Partial<CreateUserRequest>

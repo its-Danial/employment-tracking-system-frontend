@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { type ContractsQuery, directoryQueries } from '@/api/services/directory-services'
 import AppCard from '@/components/AppCard.vue'
+import CardActions from '@/components/CardActions.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import MeterBar from '@/components/MeterBar.vue'
 import PageHeader from '@/components/PageHeader.vue'
+import AccessControl from '@/components/access/AccessControl.vue'
 import CardGrid from '@/components/list/CardGrid.vue'
 import ListPagination from '@/components/list/ListPagination.vue'
 import SearchField from '@/components/list/SearchField.vue'
 import SimpleCardSkeleton from '@/components/list/SimpleCardSkeleton.vue'
+import { useConfirmDelete } from '@/composables/use-confirm-delete'
 import { usePagedList } from '@/composables/use-paged-list'
 import { formatBackendDateForDisplay } from '@/lib/utils'
 import { CONTRACT_STATUS, type ContractStatus } from '@/shared/contract'
+import type { Contract } from '@/shared/entities'
+import { PERMISSIONS } from '@/shared/permissions'
+import { useToastStore } from '@/stores/toast'
+import { RouteName } from '@/types/router'
 
 const { t } = useI18n()
 const { filters, queryParams } = usePagedList<ContractsQuery>({
@@ -24,6 +32,19 @@ const {
   isPlaceholderData,
 } = directoryQueries.useContracts(queryParams)
 
+const router = useRouter()
+const toast = useToastStore()
+const confirmDelete = useConfirmDelete()
+const deleteContract = directoryQueries.useDeleteContract()
+const remove = (contract: Contract) =>
+  confirmDelete({
+    itemName: t('contracts.deleteItem', { number: contract.contractNumber }),
+    onConfirm: async () => {
+      await deleteContract.mutateAsync(contract.uuid)
+      toast.success(t('common.deleted'))
+    },
+  })
+
 const statusClass: Record<ContractStatus, string> = {
   [CONTRACT_STATUS.active]: 'text-primary',
   [CONTRACT_STATUS.inactive]: 'text-muted-color',
@@ -34,7 +55,13 @@ const statusClass: Record<ContractStatus, string> = {
 
 <template>
   <div class="page-padding mx-auto flex w-full max-w-7xl flex-col gap-6">
-    <PageHeader :title="t('pageTitles.contracts')" :subtitle="t('contracts.subtitle')" />
+    <PageHeader :title="t('pageTitles.contracts')" :subtitle="t('contracts.subtitle')">
+      <AccessControl :permission="PERMISSIONS.contracts.create">
+        <Button as="router-link" :to="{ name: RouteName.NewContract }" :label="t('contracts.add')">
+          <template #icon><PlusIcon /></template>
+        </Button>
+      </AccessControl>
+    </PageHeader>
     <div class="flex flex-col gap-4">
       <nav class="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
         <button
@@ -74,6 +101,13 @@ const statusClass: Record<ContractStatus, string> = {
           >
             {{ t(`contractStatus.${contract.status}`) }}
           </span>
+          <CardActions
+            :name="contract.contractNumber"
+            :edit-permission="PERMISSIONS.contracts.update"
+            :delete-permission="PERMISSIONS.contracts.delete"
+            @edit="router.push({ name: RouteName.EditContract, params: { uuid: contract.uuid } })"
+            @delete="remove(contract)"
+          />
         </div>
 
         <ul v-if="contract.visas.length" class="flex flex-col gap-3">

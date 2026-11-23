@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isAxiosError } from 'axios'
 import { storeToRefs } from 'pinia'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
@@ -26,7 +27,7 @@ usePresetStore() // Initialize color mode
 
 watch(locale, () => updateDocumentTitle())
 
-const tenantState = ref({ loading: true, error: null as string | null })
+const tenantState = ref({ loading: true, error: null as string | null, notFound: false })
 onBeforeMount(async () => {
   try {
     await router.isReady()
@@ -35,6 +36,8 @@ onBeforeMount(async () => {
     await tenantStore.initializeTenant()
   } catch (error) {
     tenantState.value.error = getErrorMessage(error)
+    // No company at this address, usually a typo in the address
+    tenantState.value.notFound = isAxiosError(error) && error.response?.status === 404
   } finally {
     tenantState.value.loading = false
   }
@@ -55,8 +58,8 @@ onBeforeMount(async () => {
     <component v-else-if="route.meta.platform" :is="Component" />
     <ErrorPage
       v-else-if="tenantState.error"
-      :title="t('errors.companyLoadFailed')"
-      :message="tenantState.error"
+      :title="tenantState.notFound ? t('errors.companyNotFound') : t('errors.companyLoadFailed')"
+      :message="tenantState.notFound ? t('errors.companyNotFoundHint') : tenantState.error"
       :show-home-button="false"
     />
     <ErrorPage

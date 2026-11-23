@@ -4,7 +4,7 @@ import tenantServices from '@/api/services/tenant-services'
 import type { Tenant } from '@/shared/entities'
 import { usePresetStore } from './preset'
 
-const DEFAULT_TENANT_COLOR = '#0e4a3a'
+export const DEFAULT_TENANT_COLOR = '#0e4a3a'
 
 export const useTenantStore = defineStore('tenant', () => {
   const presetStore = usePresetStore()

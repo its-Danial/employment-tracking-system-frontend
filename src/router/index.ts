@@ -55,6 +55,24 @@ const router = createRouter({
           meta: { titleKey: 'payments', permission: PERMISSIONS.payments.view },
         },
         {
+          path: 'contracts/new',
+          name: RouteName.NewContract,
+          component: () => import('@/pages/ContractFormPage.vue'),
+          meta: { titleKey: 'newContract', permission: PERMISSIONS.contracts.create },
+        },
+        {
+          path: 'contracts/:uuid/edit',
+          name: RouteName.EditContract,
+          component: () => import('@/pages/ContractFormPage.vue'),
+          meta: { titleKey: 'editContract', permission: PERMISSIONS.contracts.update },
+        },
+        {
+          path: 'team',
+          name: RouteName.Team,
+          component: () => import('@/pages/TeamPage.vue'),
+          meta: { titleKey: 'team', permission: PERMISSIONS.users.view },
+        },
+        {
           path: 'contracts',
           name: RouteName.Contracts,
           component: () => import('@/pages/ContractsPage.vue'),

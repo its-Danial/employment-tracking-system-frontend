@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { paymentQueries } from '@/api/services/payment-services'
 import FormField from '@/components/form/FormField.vue'
 import { getFieldErrors } from '@/lib/api-errors'
+import { markFirstField } from '@/lib/dialog'
 import { parsePickedDate, toApiDate } from '@/lib/utils'
 import {
   PAYMENT_KIND,
@@ -21,6 +22,7 @@ const visible = defineModel<boolean>('visible', { required: true })
 const { t } = useI18n()
 const toast = useToastStore()
 const recordPayment = paymentQueries.useRecordPayment()
+const formRef = useTemplateRef('form')
 
 const emptyValues = () => ({
   kind: PAYMENT_KIND.payment as PaymentKind,
@@ -92,8 +94,9 @@ async function submit() {
     :header="t('payments.recordTitle')"
     :style="{ width: '32rem' }"
     :breakpoints="{ '640px': '94vw' }"
+    @show="markFirstField(formRef)"
   >
-    <form class="flex flex-col gap-5" novalidate @submit.prevent="submit">
+    <form ref="form" class="flex flex-col gap-5" novalidate @submit.prevent="submit">
       <p class="-mt-2 text-muted-color">{{ candidate.name }}</p>
       <SelectButton
         v-model="values.kind"

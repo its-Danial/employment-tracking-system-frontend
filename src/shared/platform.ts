@@ -22,6 +22,7 @@ export const RESERVED_SUBDOMAINS = [
   'api',
   'app',
   'admin',
+  'ets-admin',
   'platform',
   'mail',
   'static',
@@ -37,6 +38,8 @@ export interface CreateTenantRequest {
   companyWebsite?: string | null
   /** Brand color as hex, e.g. `#0f766e` */
   color?: string | null
+  /** A demo company: filled with sample data, which can be reset later */
+  withSampleData?: boolean
   /** First user of the company, gets the Admin role */
   admin: {
     fullName: string
@@ -50,6 +53,10 @@ export interface UpdateTenantRequest {
   contactEmail?: string
   contactPhone?: string | null
   companyWebsite?: string | null
+  address?: string | null
   color?: string | null
+  /** Shown on the login page */
+  tagline?: string | null
+  description?: string | null
   isActive?: boolean
 }

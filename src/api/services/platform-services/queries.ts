@@ -21,6 +21,23 @@ export default {
     })
   },
 
+  useResetSampleData() {
+    const queryClient = useQueryClient()
+    return useMutation({
+      mutationFn: services.resetSampleData,
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.tenants() }),
+    })
+  },
+
+  useDeleteTenant() {
+    const queryClient = useQueryClient()
+    return useMutation({
+      mutationFn: ({ uuid, subdomain }: { uuid: PlatformTenant['uuid']; subdomain: string }) =>
+        services.deleteTenant(uuid, subdomain),
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.tenants() }),
+    })
+  },
+
   useUpdateTenant() {
     const queryClient = useQueryClient()
     return useMutation({

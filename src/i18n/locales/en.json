@@ -4,6 +4,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "pickColor": "Pick a color",
     "edit": "Edit",
     "new": "New",
     "search": "Search...",
@@ -25,7 +26,14 @@
     "sort": "Sort",
     "noResults": "Nothing matches. Try a different search or filter.",
     "clearFilters": "Clear filters",
-    "notSet": "Not set"
+    "notSet": "Not set",
+    "actions": "Actions for {name}",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "add": "Add",
+    "optional": "Optional",
+    "yes": "Yes",
+    "no": "No"
   },
   "theme": {
     "switchToLight": "Switch to light mode",
@@ -45,7 +53,8 @@
     "agents": "Agents",
     "people": "People",
     "setup": "Setup",
-    "payments": "Payments"
+    "payments": "Payments",
+    "team": "Team"
   },
   "pageTitles": {
     "login": "Log in",
@@ -63,7 +72,10 @@
     "agents": "Agents",
     "newCandidate": "Add candidate",
     "editCandidate": "Edit candidate",
-    "payments": "Payments"
+    "payments": "Payments",
+    "team": "Team",
+    "newContract": "New contract",
+    "editContract": "Edit contract"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -110,7 +122,9 @@
     "pageNotFound": "We couldn't find this page. Please check the address.",
     "noAccessTitle": "No access",
     "noAccess": "You do not have access to this page. Please ask your admin if you need it.",
-    "noRole": "Your account has not been given access yet. Please ask your admin to set it up."
+    "noRole": "Your account has not been given access yet. Please ask your admin to set it up.",
+    "companyNotFound": "There's no company at this address",
+    "companyNotFoundHint": "Check the address. Each company has its own, like al-hazam followed by the site name."
   },
   "toast": {
     "success": "Done",
@@ -125,7 +139,8 @@
   },
   "confirm": {
     "deleteTitle": "Delete?",
-    "deleteMessage": "Are you sure you want to delete {item}? This can't be undone."
+    "deleteMessage": "Are you sure you want to delete {item}? This can't be undone.",
+    "deleteNamed": "Delete {item}? This can't be undone."
   },
   "platform": {
     "title": "Companies",
@@ -152,10 +167,35 @@
     "created": "{name} has been created.",
     "activated": "{name} is now active.",
     "deactivated": "{name} has been deactivated.",
-    "empty": "No companies yet."
+    "empty": "No companies yet.",
+    "edit": "Edit company",
+    "usersOf": "Users of {name}",
+    "demo": "Demo",
+    "withSampleData": "Fill with sample data",
+    "withSampleDataHint": "For showing the app: sample employers, contracts, 150 candidates and payments. Can be reset later.",
+    "resetSampleData": "Reset sample data",
+    "resetTitle": "Reset sample data?",
+    "resetMessage": "All candidates, contracts, employers, agents, trades and payments of {name} are deleted and fresh sample data is loaded. Users stay.",
+    "resetDone": "Sample data reset for {name}",
+    "saved": "{name} saved",
+    "address": "Address",
+    "tagline": "Tagline",
+    "taglineHint": "Shown on the login page.",
+    "description": "Description",
+    "active": "Active",
+    "delete": "Delete company",
+    "deleteTitle": "Delete {name}?",
+    "deleteWarning": "This deletes {name} and everything in it: users, candidates, documents, contracts and payments. It can’t be undone.",
+    "deleteConfirm": "Type {subdomain} to confirm",
+    "deleteMismatch": "Type the subdomain exactly as shown",
+    "deleted": "{name} deleted"
   },
   "trades": {
-    "subtitle": "The jobs you recruit workers for."
+    "subtitle": "The jobs you recruit workers for.",
+    "add": "Add trade",
+    "edit": "Edit trade",
+    "name": "Name",
+    "description": "Description"
   },
   "stages": {
     "registered": "Registered",
@@ -280,14 +320,42 @@
     "period": "{start} to {end}",
     "noVisas": "No visas added to this contract.",
     "empty": "No contracts yet.",
-    "anyStatus": "All"
+    "anyStatus": "All",
+    "add": "New contract",
+    "edit": "Edit",
+    "employer": "Employer",
+    "number": "Contract number",
+    "title": "Title",
+    "titlePlaceholder": "Construction project",
+    "status": "Status",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "note": "Note",
+    "details": "Contract details",
+    "visas": "Visas",
+    "visasHint": "One line per trade. Places already used by candidates can't be removed.",
+    "trade": "Trade",
+    "visaNumber": "Visa number",
+    "totalVisas": "Places",
+    "addVisa": "Add visa",
+    "removeVisa": "Remove visa",
+    "save": "Save contract",
+    "create": "Create contract",
+    "deleteItem": "contract {number}"
   },
   "companies": {
     "subtitle": "Employers abroad who send you visas.",
     "contracts": "No contracts | 1 contract | {count} contracts",
     "active": "{count} active",
     "visasPlaced": "{allocated} of {total} visas filled",
-    "empty": "No employers yet."
+    "empty": "No employers yet.",
+    "add": "Add employer",
+    "edit": "Edit employer",
+    "name": "Name",
+    "arabicName": "Arabic name",
+    "country": "Country",
+    "website": "Website",
+    "contactInfo": "Contact details"
   },
   "agents": {
     "subtitle": "Agents who bring candidates to you.",
@@ -295,7 +363,15 @@
     "departed": "{count} departed",
     "inactive": "Inactive",
     "since": "Since {date}",
-    "empty": "No agents yet."
+    "empty": "No agents yet.",
+    "add": "Add agent",
+    "edit": "Edit agent",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "hireDate": "Working with us since",
+    "notes": "Notes",
+    "active": "Active"
   },
   "candidateForm": {
     "newSubtitle": "Enter the details as they appear on the passport and CNIC.",
@@ -432,5 +508,26 @@
     "deleteItem": "this entry",
     "remove": "Remove entry",
     "by": "by {name}"
+  },
+  "team": {
+    "subtitle": "People who can log in to your company, and what they can do.",
+    "add": "Add user",
+    "edit": "Edit user",
+    "name": "Full name",
+    "email": "Email address",
+    "role": "Role",
+    "noRole": "No role (can't see anything)",
+    "password": "Password",
+    "newPassword": "New password",
+    "passwordHint": "At least 8 characters.",
+    "passwordEditHint": "Leave empty to keep the current password. A new one signs them out everywhere.",
+    "active": "Can log in",
+    "inactive": "Deactivated",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "you": "You",
+    "added": "{name} added",
+    "deleteItem": "{name}",
+    "empty": "No users yet."
   }
 }

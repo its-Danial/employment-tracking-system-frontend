@@ -9,6 +9,7 @@ import {
   IdentificationIcon,
   Squares2X2Icon,
   UserGroupIcon,
+  UsersIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline'
 
@@ -55,5 +56,12 @@ export const sidebarLinks: NavLink[] = [
     labelKey: 'trades',
     to: { name: RouteName.Trades },
     permission: PERMISSIONS.trades.view,
+  },
+  {
+    icon: markRaw(UsersIcon),
+    labelKey: 'team',
+    to: { name: RouteName.Team },
+    permission: PERMISSIONS.users.view,
+    startsGroup: true,
   },
 ]

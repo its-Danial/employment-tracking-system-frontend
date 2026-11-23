@@ -25,6 +25,12 @@ export function useConfirmDelete() {
       rejectProps: { label: t('common.cancel'), severity: 'secondary', outlined: true },
       acceptProps: { label: t('common.delete'), severity: 'danger' },
       defaultFocus: 'reject',
-      accept: onConfirm,
+      accept: async () => {
+        try {
+          await onConfirm()
+        } catch {
+          // The API error toast already says why (e.g. still in use), nothing else to do
+        }
+      },
     })
 }
